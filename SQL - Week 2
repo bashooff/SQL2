@@ -1,0 +1,235 @@
+Sql for Data Science
+Week 2
+
+WHERE Clause operators:
+Selecting rows based on conditions
+
+SELECT column_name, column_name
+FROM table_name
+WHERE column_name operator value;
+(operator values include =, =<, =>, BETWEEN, >, <, <>, IS NULL)
+ e.g.: SELECT Productname, Unitprice, SupplierID
+       FROM Products
+       WHERE UnitPrice >= 75;
+
+Checking for Non-matches:
+take everything except certain values
+ e.g.: SELECT Productname, Unitprice, SupplierID
+       FROM Products
+       WHERE ProductName  <> 'Alice Mutton';
+
+Filtering with a range of values
+ e.g.: SELECT Productname, Unitprice, SupplierID
+       FROM Products
+       WHERE ProductName UnitsInStock BETWEEN 15 AND 80;
+
+Filtering No Value
+ e.g: SELECT Productname, Unitprice, SupplierID
+       FROM Products
+       WHERE ProductName IS NULL;
+
+------------------------------------------------------------------------------------------------------
+
+IN operator:
+specifies a range of conditions
+ e.g.: SELECT Productname, Unitprice, SupplierID
+       FROM Products
+       WHERE SupplierID IN (9,10,11);
+
+OR Operator:
+useful for rows matching specific conditions
+However!!!! : it will not evaluate the second statement if first statement is met
+ e.g.: SELECT Productname, Unitprice, SupplierID
+       FROM Products
+       WHERE ProductName = 'Tofu' OR 'Konbu';
+
+Combining OR and AND
+ e.g.: SELECT Productname, Unitprice, SupplierID
+       FROM Products
+       WHERE (SupplierID = 9 OR SupplierID = 11)
+       AND UnitPrice > 15;
+
+NOT operator:
+exclude different options
+ e.g.: SELECT *
+       FROM Employees
+       WHERE NOT City='London' AND NOT City='Seattle';
+
+------------------------------------------------------------------------------------------------------
+
+Wildcards:
+- Special character used to match parts of a value
+- Search pattern made from literal text, wildcart character or a combination
+- Uses LIKE as an operator
+- Can only be used with strings
+
+1. '%Pizza' - Grabs anything ending with the word pizza
+2. 'Pizza%' - Grabs anything after the word pizza
+3. '%Pizza%' - Grabs anything before and after the word pizza
+4. 'S%E' - Grabs anything that starts with 'S' and ends with 'E'
+5. 't%@gmail.com' - Grabs gmail addresses that start with 't'
+
+Wildcards downsides:
+- Takes longer to run
+- Better to use another operator
+- Statements with wildcards will take longer to run if used at the end of search patterns
+- Placement of wildcards is important
+
+------------------------------------------------------------------------------------------------------
+
+Sorting data
+- helps keep information you want on top
+- allows user to sort data by particular columns
+
+Sorting by column position
+ORDER BY 2,3
+
+Sort Direction
+DESC - descending order
+ASC - ascending order
+
+------------------------------------------------------------------------------------------------------
+
+Math operations
+ e.g.: SELECT
+       ProductID
+       ,UnitsOnOrder
+       ,UnitPrice
+       ,UnitsOnOrder * UnitPrice AS Total_Order_Cost
+       FROM Products
+
+ e.g.: SELECT
+       ProductID
+       ,Quantity
+       ,UnitPrice
+       ,Discount
+       ,(UnitPrice - Discount)/Quantity AS Total Cost
+       FROM Products
+
+------------------------------------------------------------------------------------------------------
+
+Aggregate functions
+- Used to summarize data
+- Finding the highest and lowest values
+- Finding the total numbers of rows
+- Finding the average value
+(AVG, COUNT, MIN, MAX, SUM)
+ e.g.: SELECT AVG(UnitPrice) AS avg_price
+       FROM Products;
+
+ e.g.: SELECT COUNT (*)  AS total_customers
+       FROM Customers;
+
+ e.g.: SELECT COUNT(CustomerID) AS total_customers
+       FROM Customers
+
+ e.g.: SELECT MAX(UnitPrice) AS max_prod_price
+       FROM Products
+
+ e.g.: SELECT MAX(UnitPrice) AS max_prod_price
+       ,MIN(UnitPrice) AS min_prod_price
+       FROM Products
+
+ e.g.: SELECT SUM(UnitPrice) AS total_prod_price
+       FROM Products
+
+ e.g.: SELECT SUM(UnitPrice*UnitsInStock) AS total_price
+       FROM Products
+       WHERE SupplierID = 23;
+
+ e.g.: SELECT COUNT(DISTINCT CustomerID)
+       FROM Customers
+
+------------------------------------------------------------------------------------------------------
+
+Grouping data
+
+Example:
+Counting customers after group on region rather than counting the whole table
+
+SELECT region
+,COUNT(CustomerID) AS total_customers
+FROM Customers
+GROUP BY Region;
+
+-GROUP BY clauses can contain multiple columns
+- Every column in the SELECT statement must be present in GROUP BY clause,
+except for aggregated calculations
+- NULLs will be grouped together if your GROUP BY column contains NULLs
+
+Example:
+We want the count of orders of customers, but we only want to see the total orders
+of customers who have had more than 2 orders.
+
+SELECT CustomerID
+,COUNT(*) AS orders
+FROM Orders
+GROUP BY CustomerID
+HAVING COUNT (*) >=2;
+
+------------------------------------------------------------------------------------------------------
+
+Module 2 Coding Assignment.
+
+Q1: Find all the tracks that have a length of 5,000,000 milliseconds or more.
+SELECT TrackID, Milliseconds
+FROM Tracks
+WHERE Milliseconds >= 5000000
+
+Q2: Find all the invoices whose total is between $5 and $15 dollars.
+SELECT InvoiceId, Total
+FROM Invoices
+WHERE Total between 5 and 15
+
+Q3: Find all the customers from the following States: RJ, DF, AB, BC, CA, WA, NY
+SELECT *
+FROM Customers
+WHERE State in ('RJ','DF','AB','BC','CA','WA','NY')
+
+Q4: Find all the invoices for customer 56 and 58 where the total was between $1.00 and $5.00
+SELECT *
+FROM Invoices
+WHERE CustomerId in (56,58) and Total between 1 and 5
+
+Q5: Find all the tracks whose name starts with 'All'
+SELECT name
+FROM Tracks
+WHERE name like 'All%'
+
+Q6: Find all the customer emails that start with "J" and are from gmail.c
+SELECT Email
+FROM Customers
+WHERE Email like 'J%gmail.com'
+
+Q7: Find all the invoices from the billing city Brasília, Edmonton, and Vancouver and sort in descending order by invoice ID.
+SELECT *
+FROM Invoices
+WHERE BillingCity in ('Brasília','Edmonton','Vancouver')
+ORDER BY InvoiceId DESC
+
+Q8: Show the number of orders placed by each customer (hint: this is found in the invoices table) and sort the result by the number of orders in descending order.
+SELECT CustomerId, COUNT(InvoiceId) as total_invoices
+FROM Invoices
+GROUP BY CustomerId
+ORDER BY total_invoices DESC
+
+Q9: Find the albums with 12 or more tracks.
+SELECT Name, count(AlbumId)
+FROM Tracks
+GROUP BY AlbumId
+HAVING COUNT(AlbumId) >= 12
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

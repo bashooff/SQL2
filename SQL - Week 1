@@ -1,0 +1,131 @@
+Sql for Data Science
+Week 1
+
+What is SQL?
+- standard computer language for relational databases and data manipulation
+- used to query, insert, update and modify data
+- communicate with databases
+- cannot write complete applications
+
+How is it used?
+- read/retrieve data
+- write data: add data to a table
+- update data: insert new data
+
+------------------------------------------------------------------------------------------------------
+
+Database Administrator                                  Data Scientist
+- Manages/governs entire database                       - End user of database
+- Gives permission to users                             - Uses SQL to query and retrieve data
+- Determine access to data
+- Manages and creates tables
+- Uses SQL to query and retrieve data
+
+How do data scientists use SQL?
+- retrieve data
+- create own tables or test environment
+- combine multiple sources together
+- writes complex queries for analysis
+
+Database:
+A container to store organized data; a set of related information
+
+Table:
+A structured list of data or a specific type
+
+------------------------------------------------------------------------------------------------------
+
+Data modeling:
+1. Organizes and structures information into multiple related tables
+2. Can represent a business process or show relationships between business processes
+3. Should closely represent real world
+
+NoSQL - Not Only SQL:
+A mechanism for storage and retrieval of unstructured data modeled by means other than tabular relations in relational databases
+
+------------------------------------------------------------------------------------------------------
+
+Relational Model                                        Transactional model
+- Allows for easy querying and data manipulation        - Operational database: insurance claims within a healthcare database
+ in an easy, logical and intuitive way
+
+Data Model Building Blocks:
+- One-to-many: customer to invoices
+- Many-to-many: student to classes
+- One-to-one: manager to store
+
+Primary key:
+A column (or set of columns) whose values uniquely identify every row in a table
+
+Foreign key:
+One or more columns that can be used together to identify a single row in another table
+
+------------------------------------------------------------------------------------------------------
+
+1. The SELECT statement:
+Need to specify two pieces of information to use a SELECT statement: what you want, and where you want it from
+ e.g.: SELECT prod_name FROM Products;                      1 variable
+ e.g.: SELECT prod_name, prod_id, prod_price FROM Products; Multiple variables
+ e.g.: SELECT * FROM Products;                              All variables
+ e.g.: SELECT prod_name FROM Products LIMIT 5;              Limit the amount of rows
+
+------------------------------------------------------------------------------------------------------
+
+2. The CREATE TABLE statement:
+Creating your own table
+e.g.:
+CREAT TABLE Shoes
+    (
+    Id      char(10)        PRIMARY KEY
+    Brand   char(10)        NOT NULL,
+    Type    char(250)       NOT NULL,
+    Color   char(250)       NOT NULL,
+    Price   decimal(8,2)    NOT NULL,
+    Desc    Varchar(750)    NULL
+    );
+
+3. The INSERT INTO statement:
+Adding data to the table
+e.g.:
+INSERT INTO Shoes
+VALUES ('1434565'
+        ,'Gucci'
+        ,'Slippers'
+        ,'Pink'
+        ,'695.00'
+        ,NULL
+            );
+
+------------------------------------------------------------------------------------------------------
+
+Temporary tables:
+- will be deleted when session is terminated
+- faster than creating a new table
+- useful for complex queries using subsets and joins
+
+4. The CREATE TEMPORARY TABLE statement:
+Creating a temporary table
+e.g.:
+CREATE TEMPORARY TABLE Sandals AS
+  (
+    SELECT *
+    FROM Shoes
+    WHERE shoe_type = 'sandals'
+  )
+
+------------------------------------------------------------------------------------------------------
+
+Adding comments:
+/*          */ comments out whole block
+or use '--' for adding comments
+
+------------------------------------------------------------------------------------------------------
+
+
+
+
+
+
+
+
+

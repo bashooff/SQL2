@@ -1,0 +1,158 @@
+Sql for Data Science
+Week 4
+
+Concatenations
+ e.g.: SELECT CompanyName, ContactName
+              ,CompanyName || '('|| ContactName||')
+              FROM Customers
+
+Trimming Strings
+Trims the leading or trailing space from a string
+ e.g.: SELECT TRIM('  You the best.  ') AS TrimmedString
+
+Substring:
+Returns the specified number of characters from a particular position of a given string
+SUBSTR(string name, string position, number of characters to be returned)
+ e.g.: SELECT first_name,
+       SUBSTR(first_name, 3, 4)
+       FROM Employees
+       WHERE department_id = 100
+
+Upper and Lower
+SELECT UPPER(column_name) FROM table_name;
+SELECT LOWER(column_name) FROM table_name;
+SELECT UCASE(column_name) FROM table_name;
+
+------------------------------------------------------------------------------------------------------
+
+Using the STRFTIME function:
+Example: Birthdate is in the form of 1962-02-18 00:00:00
+Let's split it in 3 columns
+SELECT BIRTHDATE
+    ,STRFTIME('%Y', Birthdate) AS Year
+    ,STRFTIME('%m', Birthdate) AS Month
+    ,STRFTIME('%d', Birthdate) AS Day
+    FROM employees
+
+Compute current date:
+SELECT DATE('now')
+
+Compute Year, Month, and Day for current date:
+SELECT STRFTIME('%Y %m %d', 'now')
+
+Compute age using birthdate:
+SELECT BIRTHDATE
+    ,STRFTIME('%Y', Birthdate) AS Year
+    ,STRFTIME('%m', Birthdate) AS Month
+    ,STRFTIME('%d', Birthdate) AS Day
+    ,DATE(('now') - Birthdate) AS Age
+    FROM employees
+
+------------------------------------------------------------------------------------------------------
+
+Case Statements
+- Works like if-then-else statements in programming languages
+(If, elif, else in Python)
+- Can be used in SELECT, INSERT, UPDATE, DELETE statements
+
+Format:
+CASE input_expression
+    WHEN when_expression THEN result_expression
+    ELSE else_result_expression
+END
+
+Example 1: We have a table with employees, and want to create a column that has the value
+'Calgary' if a person lives in the city Calgary, and 'Other' if a person lives somewhere else.
+
+SELECT employeeid, firstname, lastname, city
+    ,CASE City
+        WHEN 'Calgary' THEN 'Calgary'
+        ELSE 'Other'
+    END calgary
+FROM Employees
+ORDER BY Lastname, Firstname
+
+Example 2: Create a category based on amount of bytes a track has.
+
+SELECT trackid, name, bytes
+    ,CASE
+    WHEN bytes < 300000 THEN 'small'
+    WHEN bytes >= 300001 AND bytes <= 500000 THEN 'medium'
+    WHEN bytes >=500001 THEN 'large'
+    ELSE 'Other'
+    END bytescategory
+FROM tracks
+
+------------------------------------------------------------------------------------------------------
+
+Views:
+- A stored query
+- Can add or remove columns without changing the schema
+- Use it to encapsulate queries
+- The view will be removed after database connection has ended
+
+------------------------------------------------------------------------------------------------------
+
+Data governance and Profiling
+
+Data profiling:
+- Looking at descriptive statistics or object data information - examining data for completeness and accuracy
+- Important to understand your data before you query it
+
+Object Data Profile:
+- number of rows
+- table size
+- when the object was last updated
+
+Column Data Profile:
+- column data type
+- number of distinct values
+- number of NULL values
+- descriptive statistics
+
+Governance Best Practices:
+- Understand your read and write capabilities
+- Clean up your environments
+- Understand your promotion process
+
+------------------------------------------------------------------------------------------------------
+
+Using SQL for Data Science
+- Keep moving between Data understanding and Business understanding
+
+Profiling data:
+- Get into the details of your data
+- Create a data model and map the fields and tables you need
+- Consider joins and calculations
+- Understand any data quality or format issues
+
+Start with SELECT
+- Start simple
+- Any query begins with SELECT
+- Add in special formatting
+- If using subqueries, start with the innermost query.
+
+Test along the way:
+- Do not wait until the end to test queries
+- Test after each join or filter
+- Are you getting the results you expected?
+- Start small and go step-by-step when troubleshooting a query
+
+------------------------------------------------------------------------------------------------------
+
+Module 4 Coding Questions
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

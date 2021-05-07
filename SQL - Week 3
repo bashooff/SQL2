@@ -1,0 +1,238 @@
+Sql for Data Science
+Week 3
+
+Subqueries:
+- Queries embedded into other queries
+- Relational databases store data in multiple tables
+- Subqueries merge data from multiple sources together
+- Helps with adding other filtering criteria
+
+Example:
+We need to know the region each customer is from who has had an order
+with freight over 100
+
+SELECT CustomerID, CompanyName, Region
+FROM Customers
+WHERE CustomerID in (SELECT CustomerID
+                     FROM Orders
+                     WHERE Freight > 100);
+
+Always perform the innermost SELECT portion first
+
+------------------------------------------------------------------------------------------------------
+
+Practices with subqueries
+- There is no limit to the number of subqueries
+- Performance slows when nesting too deeply
+- Subquery selects can only retrieve a signle columns
+
+ e.g.: SELECT Customer_name, Customer_state
+       (SELECT COUNT (*) AS orders
+       FROM Orders
+       WHERE Orders.customer_id = Customer.customer_id) AS orders
+       FROM Customers
+       ORDER BY Customer_name
+
+------------------------------------------------------------------------------------------------------
+
+Joining tables
+- Associate correct records from each table on the fly
+- Allows data retrieval from multiple tables in one query
+- Joins are not physical - only for the duration of the query execution
+
+------------------------------------------------------------------------------------------------------
+
+Cartesian Joins
+Each row from the first table joins with all the rows of another table
+
+ e.g.: SELECT product_name, unit_price, company_name
+       FROM suppliers CROSS JOIN products;
+
+------------------------------------------------------------------------------------------------------
+
+Inner Joins
+Selects records that have matching values in both tables
+
+ e.g.: SELECT suppliers.CompanyName,ProductName,UnitPrice
+       FROM Suppliers INNER JOIN Products
+       ON Suppliers.supplierid = Products.supplierid
+
+ e.g.: SELECT o.OrderID, c.CompanyName, e.LastName
+       FROM ((Orders o INNER JOIN Customers c ON
+       o.CustomerID = c.CustomerID)
+       INNER JOIN Employees e ON o.EmployeeID = e.EmployeeID);
+
+------------------------------------------------------------------------------------------------------
+
+Aliases:
+- SQL aliases give a table or a column a temporary name
+- Make column names more readable
+- Exists for the duration of the query
+
+ e.g.: SELECT vendor_name, product_name, product_price
+       FROM Vendors AS v, Products AS p
+       WHERE v.vendor_id = p.vendor_id;
+
+Self Joins:
+- Match customers from the same city
+- Take the table and treat it like two seperate tables
+- Join the original table to itself
+
+ e.g.: SELECT A.CustomerName AS CustomerName1, B.CustomerName AS CustomerName2, A.city
+       FROM Customers A, Customers B
+       WHERE A.CustomerID = B.CustomerID
+       AND A.City = B.City
+       ORDER BY A.City;
+
+------------------------------------------------------------------------------------------------------
+
+Left Join:
+- Returns all records from the left table, and the matched records from the right table
+- No match results in NULL
+
+ e.g.: SELECT C.CustomerName, O.OrderID
+       FROM Customers c
+       LEFT JOIN Orders O ON C.CustomerID = O.CustomerID
+       ORDER BY C.CustomerName;
+
+Will select all customers, and any orders they might have
+
+Right Join:
+- Returns all records from the right table, and the matched records from the left table
+- No match results in NULL
+
+ e.g.: SELECT Orders.OrderID, Employees.LastName, Employees.Firstname
+       FROM Orders
+       RIGHT JOIN Employees  ON Orders.EmployeeID = Employees.EmployeeID
+       ORDER BY Orders.OrderID;
+
+Full Outer Join:
+- Returns all records when there is a match in either left or right table records
+
+ e.g.: SELECT Customers.CustomerName, Orders.OrderID
+       FROM Customers
+       FULL OUTER JOIN Orders ON Customers.CustomerID = Orders.CustomerID
+       ORDER BY Customers.CustomerName;
+
+------------------------------------------------------------------------------------------------------
+
+Union:
+- The Union operator is used to combine the result-set of two or more SELECT statements
+- Each SELECT statement withing UNION must have the same amount of columns
+- Columns must have similar data types
+- The columns in each SELECT statement must be in the same order
+
+Example: Which German cities have Suppliers
+
+SELECT City, Country
+FROM Customers
+WHERE Country = 'Germany'
+UNION
+SELECT City, Country
+FROM Suppliers
+WHERE Country = 'Germany'
+ORDER BY City;
+
+------------------------------------------------------------------------------------------------------
+
+Practice Quiz
+
+Q1: How many albums does the artist Led Zeppelin have?
+SELECT *
+FROM artists
+LEFT JOIN albums ON artists.ArtistId = albums.ArtistId
+WHERE Name = 'Led Zeppelin'
+# artistid is same value, first look at where artists are stored, then at albums
+
+Q2: Create a list of album titles and unit price for the artist 'AudioSlave'
+select a.UnitPrice,b.Title,b.Name
+from (select tracks.AlbumId,invoice_items.UnitPrice
+from tracks
+left join invoice_items
+on tracks.TrackId=invoice_items.TrackId) as a
+left join (select artists.Name,albums.Title,albums.AlbumId
+from artists
+left join albums
+on artists.ArtistId=albums.ArtistId) as b
+on a.AlbumId=b.AlbumId
+where b.Name="Audioslave"
+
+Q3: Find the first and last name of any customer who does not have an invoice. Are there any customers returned from the query?
+SELECT customers.FirstName,customers.LastName,
+invoices.InvoiceId
+FROM customers
+LEFT JOIN invoices
+ON customers.CustomerId=invoices.CustomerId
+WHERE invoices.InvoiceId is NULL
+
+Q4: Find the total price for each album.
+select sum(b.UnitPrice) as TotalPrice,b.Title as Title
+from (select a.UnitPrice as UnitPrice,albums.Title as Title
+from (select tracks.AlbumId,invoice_items.UnitPrice
+from tracks
+left join invoice_items
+on tracks.TrackId=invoice_items.TrackId) as a
+left join albums on a.AlbumId=albums.AlbumId
+where albums.Title="Big Ones") as b
+
+Q5: How many records are created when you apply a Cartesian join to the invoice and invoice items table?
+SELECT invoices.InvoiceId
+FROM invoices CROSS JOIN invoice_items
+
+------------------------------------------------------------------------------------------------------
+
+Module 3 Coding Assignment
+
+Q1: Using a subquery, find the names of all the tracks for the album "Californication".
+SELECT Tracks.Name, Tracks.AlbumId, Albums.Title
+FROM Tracks
+LEFT JOIN Albums ON Tracks.AlbumId = Albums.AlbumId
+WHERE Title = 'Californication'
+
+Q2: Find the total number of invoices for each customer along with the customer's full name, city and email.
+SELECT Customers.FirstName, Customers.LastName, Customers.Email, Customers.City, Customers.CustomerId, COUNT(Invoices.InvoiceId)
+FROM Customers
+LEFT JOIN Invoices ON Customers.CustomerId = Invoices.CustomerId
+GROUP BY Customers.CustomerId
+
+Q3: Retrieve the track name, album, artistID, and trackID for all the albums.
+SELECT Tracks.Name,
+       A.Name AS Artist,
+       Albums.Title AS Album,
+       Tracks.TrackId
+FROM ((Tracks INNER JOIN Albums
+ON Tracks.AlbumId = Albums.AlbumId)
+INNER JOIN Artists A
+ON A.ArtistId = Albums.ArtistId)
+
+Q4: Retrieve a list with the managers last name, and the last name of the employees who report to him or her
+SELECT M.LastName AS Manager,
+       E.LastName AS Employee
+FROM Employees E INNER JOIN Employees M
+ON E.ReportsTo = M.EmployeeID
+
+Q5: Find the name and ID of the artists who do not have albums
+SELECT Name, Artists.ArtistId, Albums.Title
+FROM Artists
+LEFT JOIN Albums ON Artists.ArtistId = Albums.ArtistId
+WHERE Title IS NULL
+
+Q6: Use a UNION to create a list of all the employee's and customer's first names and last names ordered by the last name in descending order
+SELECT FirstName,
+       LastName
+FROM Employees
+UNION
+SELECT FirstName,
+       LastName
+FROM Customers
+ORDER BY LastName DESC
+
+Q7: See if there are any customers who have a different city listed in their billing city versus their customer city.
+SELECT Customers.FirstName,
+       Customers.LastName,
+       Customers.City,
+       Invoices.BillingCity
+FROM Customers
+INNER JOIN Invoices
+ON Customers.CustomerId = Invoices.CustomerId
+WHERE City != BillingCity
